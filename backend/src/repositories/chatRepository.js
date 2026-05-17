@@ -3,12 +3,33 @@ const ChatGroup = require("../models/chatGroupModel");
 const User = require("../models/userModel");
 
 class ChatRepository {
+  listUsers() {
+    return User.find().sort({ createdAt: 1 });
+  }
+
   createUser(name) {
     return User.create({ name });
   }
 
+  listGroups() {
+    return ChatGroup.find()
+      .sort({ createdAt: 1 })
+      .populate("members", "_id name")
+      .populate("createdBy", "_id name");
+  }
+
   createGroup(payload) {
     return ChatGroup.create(payload);
+  }
+
+  addMemberToGroup(groupId, userId) {
+    return ChatGroup.findByIdAndUpdate(
+      groupId,
+      { $addToSet: { members: userId } },
+      { new: true }
+    )
+      .populate("members", "_id name")
+      .populate("createdBy", "_id name");
   }
 
   async createMessage(payload) {

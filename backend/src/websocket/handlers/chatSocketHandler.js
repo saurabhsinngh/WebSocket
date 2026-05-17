@@ -95,9 +95,12 @@ class ChatSocketHandler {
 
     const group = await chatRepository.findGroupById(groupId);
 
-    // Broadcast to all online group members.
+    // Broadcast to online group members except sender.
     group.members.forEach((member) => {
-      const memberSocket = socketRegistry.getSocketByUserId(member._id.toString());
+      const memberId = member._id.toString();
+      if (memberId === senderId) return;
+
+      const memberSocket = socketRegistry.getSocketByUserId(memberId);
       if (memberSocket && memberSocket.readyState === 1) {
         this.send(memberSocket, {
           type: "group_message_received",

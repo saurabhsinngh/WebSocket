@@ -7,6 +7,16 @@
   }
 
   register(userId, socket) {
+    const previousUserId = this.socketUsers.get(socket);
+    if (previousUserId) {
+      this.userSockets.delete(previousUserId);
+    }
+
+    const previousSocket = this.userSockets.get(userId);
+    if (previousSocket && previousSocket !== socket) {
+      this.socketUsers.delete(previousSocket);
+    }
+
     this.userSockets.set(userId, socket);
     this.socketUsers.set(socket, userId);
   }

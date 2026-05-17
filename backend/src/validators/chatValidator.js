@@ -10,7 +10,12 @@ const createGroupSchema = yup.object({
   createdBy: yup.string().required()
 });
 
+const addGroupMemberSchema = yup.object({
+  userId: yup.string().required()
+});
+
 module.exports = {
   createUserSchema,
-  createGroupSchema
+  createGroupSchema,
+  addGroupMemberSchema
 };

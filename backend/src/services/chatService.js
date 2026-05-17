@@ -2,8 +2,16 @@
 const chatRepository = require("../repositories/chatRepository");
 
 class ChatService {
+  listUsers() {
+    return chatRepository.listUsers();
+  }
+
   createUser({ name }) {
     return chatRepository.createUser(name);
+  }
+
+  listGroups() {
+    return chatRepository.listGroups();
   }
 
   async createGroup({ name, memberIds, createdBy }) {
@@ -16,6 +24,20 @@ class ChatService {
       members: allMembers,
       createdBy
     });
+  }
+
+  async addMemberToGroup({ groupId, userId }) {
+    const group = await chatRepository.findGroupById(groupId);
+    if (!group) {
+      throw new Error("Group not found");
+    }
+
+    const alreadyMember = group.members.some((member) => member._id.toString() === userId);
+    if (alreadyMember) {
+      throw new Error("User is already a member of this group");
+    }
+
+    return chatRepository.addMemberToGroup(groupId, userId);
   }
 
   async sendDirectMessage({ senderId, receiverId, message }) {
